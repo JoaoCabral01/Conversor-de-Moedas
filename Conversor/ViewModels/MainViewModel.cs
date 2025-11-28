@@ -6,6 +6,7 @@ using Conversor.Services;
 using Conversor.Helpers;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
+using System.Security.Cryptography;
 
 namespace Conversor.ViewModels
 {
@@ -58,6 +59,12 @@ namespace Conversor.ViewModels
         public ICommand ExcluirCommand { get; }
         public ICommand NovoCommand { get; }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string? nome = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nome));
+        }
     }
 }
 
