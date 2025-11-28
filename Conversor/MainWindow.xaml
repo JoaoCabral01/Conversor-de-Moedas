@@ -1,19 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="Conversor.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Conversor"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Title="Conversor">
+    xmlns:models="using:Conversor.Models"
+    Title="Conversor"
+    Width="600" Height="450">
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
 
-    <Grid>
+    <StackPanel Padding="16" Spacing="12">
 
-    </Grid>
+        <TextBlock Text="Conversão de Moedas" FontSize="20"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <ComboBox Width="100" ItemsSource="{Binding Moedas}" SelectedItem="{Binding MoedaOrigem}"/>
+            <TextBox Width="80" Text="{Binding Valor, Mode=TwoWay}"/>
+            <TextBlock Text="→" VerticalAlignment="Center"/>
+            <ComboBox Width="100" ItemsSource="{Binding Moedas}" SelectedItem="{Binding MoedaDestino}"/>
+            <Button Content="Converter" Command="{Binding ConverterCommand}"/>
+        </StackPanel>
+
+        <TextBlock Text="Resultado:"/>
+        <TextBlock Text="{Binding Resultado}" FontSize="22"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Salvar" Command="{Binding SalvarCommand}"/>
+            <Button Content="Novo" Command="{Binding NovoCommand}"/>
+            <Button Content="Excluir" Command="{Binding ExcluirCommand}"/>
+        </StackPanel>
+
+        <TextBlock Text="Histórico" FontSize="18"/>
+
+        <ListView ItemsSource="{Binding Conversoes}" SelectedItem="{Binding Selecionado}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:Conversao">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{x:Bind MoedaOrigem}" Width="50"/>
+                        <TextBlock Text="→"/>
+                        <TextBlock Text="{x:Bind MoedaDestino}" Width="50"/>
+                        <TextBlock Text="{x:Bind Valor}" Width="70"/>
+                        <TextBlock Text="="/>
+                        <TextBlock Text="{x:Bind Resultado}" Width="90"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </StackPanel>
 </Window>
