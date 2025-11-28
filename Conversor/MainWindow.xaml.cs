@@ -6,7 +6,6 @@ namespace Conversor
     public sealed partial class MainWindow : Window
     {
         public MainViewModel ViewModel { get; }
-        public MainViewModel DataContext { get; }
 
         public MainWindow()
         {
