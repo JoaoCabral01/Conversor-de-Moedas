@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace  conversor.Helpers
+namespace  Conversor.Helpers
 {
     public class RelayCommand : ICommand
     {
