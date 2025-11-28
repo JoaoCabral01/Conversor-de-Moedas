@@ -59,7 +59,92 @@ namespace Conversor.ViewModels
         public ICommand ExcluirCommand { get; }
         public ICommand NovoCommand { get; }
 
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        public MainViewModel()
+        {
+            var caminhoDB = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "conversor.db"
+            );
+            _db = new BancoDeDadosService(caminhoDB);
+            Carregar();
+
+            ConverterCommand = new RelayCommand(_ => Converter());
+            SalvarCommand = new RelayCommand(_ => Salvar());
+            ExcluirCommand = new RelayCommand(_ => Excluir(), _ => Selecionado != null);
+            NovoCommand = new RelayCommand(_ => Novo());
+
+        }
+
+        private void Carregar()
+        {
+            Conversaos.Clear();
+            foreach (var iten in _db.ObterTodos())
+                Conversaos.Add(iten);
+        }
+
+        private void Converter()
+        {
+            Resultado = Math.Round(Valor * ObterTaxa(MoedaOrigem, MoedaDestino), 4);
+        }
+
+        public void Salvar()
+        {
+            if (Selecionado != null)
+            {
+                Selecionado.MoedaOrigem = MoedaOrigem;
+                Selecionado.MoedaDestino = MoedaDestino;
+                Selecionado.Valor = Valor;
+                Selecionado.Resultado = Resultado;
+                _db.Atualizar(Selecionado);
+            }
+            else
+            {
+                var novo = new Conversao
+                {
+                    MoedaOrigem = MoedaOrigem,
+                    MoedaDestino = MoedaDestino,
+                    Valor = Valor,
+                    Resultado = Resultado,
+                    Criadoem = DateTime.UtcNow
+                };
+                novo.Id = _db.Inserir(novo);
+                Conversaos.Insert(0, novo);
+            }
+        }
+
+        public void Excluir()
+        {
+            if (Selecionado != null)
+            {
+                _db.Excluir(Selecionado.Id);
+                Conversaos.Remove(Selecionado);
+                Selecionado = null;
+            }
+        }
+
+        public void Novo()
+        {
+            Selecionado = null;
+            MoedaOrigem = "BRL";
+            MoedaDestino = "USD";
+            Valor = 1;
+            Resultado = 0;
+        }
+
+        private double ObterTaxa(string origem, string destino)
+        {
+            if (origem == "BRL" && destino == "USD") return 0.18;
+            if (origem == "USD" && destino == "BRL") return 5.60;
+
+            if (origem == "BRL" && destino == "EUR") return 0.16;
+            if (origem == "EUR" && destino == "BRL") return 6.10;
+
+            return 1;
+        }
 
         private void OnPropertyChanged([CallerMemberName] string? nome = null)
         {

@@ -57,7 +57,7 @@ namespace Conversor.Services
             return lista;
         }
 
-        public int inserir(Conversao c)
+        public int Inserir(Conversao c)
         {
             using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
             conexao.Open();
@@ -76,7 +76,7 @@ namespace Conversor.Services
             return (int)(long)comando.ExecuteScalar();
         }
 
-        public void Atulizar (Conversao c)
+        public void Atualizar (Conversao c)
         {
             using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
             conexao.Open();
