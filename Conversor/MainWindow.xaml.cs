@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Conversor.ViewModels;
 
 namespace Conversor
@@ -9,9 +10,20 @@ namespace Conversor
 
         public MainWindow()
         {
-            ViewModel = new MainViewModel();
             this.InitializeComponent();
-            this.DataContext = ViewModel;
+
+            ViewModel = new MainViewModel();
+
+            if (this.Content is FrameworkElement root)
+            {
+                root.DataContext = ViewModel;
+            }
+            else
+            {
+                var grid = new Grid();
+                this.Content = grid;
+                grid.DataContext = ViewModel;
+            }
         }
     }
 }

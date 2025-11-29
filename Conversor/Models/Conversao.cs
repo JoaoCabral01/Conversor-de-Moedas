@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace Conversor.Models
 {
     public class Conversao
@@ -10,8 +9,6 @@ namespace Conversor.Models
         public string MoedaDestino { get; set; } = "";
         public double Valor { get; set; }
         public double Resultado { get; set; }
-
         public DateTime Criadoem { get; set; } = DateTime.UtcNow;
     }
-
 }

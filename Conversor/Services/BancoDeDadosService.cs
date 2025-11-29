@@ -17,7 +17,7 @@ namespace Conversor.Services
 
         private void CriarBancoSeNaoExistir()
         {
-            using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
+            using var conexao = new SqliteConnection($"Data Source={_dbPath}");
             conexao.Open();
             using var comando = conexao.CreateCommand();
             comando.CommandText =
@@ -37,10 +37,10 @@ namespace Conversor.Services
         public List<Conversao> ObterTodos()
         {
             var lista = new List<Conversao>();
-            using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
+            using var conexao = new SqliteConnection($"Data Source={_dbPath}");
             conexao.Open();
             using var comando = conexao.CreateCommand();
-            comando.CommandText = "SELECT Id, MoedaOrigem, MoedaDestino, Valor, Resultado, CriadoEm FROM Conversoes;";
+            comando.CommandText = "SELECT Id, MoedaOrigem, MoedaDestino, Valor, Resultado, CriadoEm FROM Conversoes ORDER BY Id DESC;";
             using var leitor = comando.ExecuteReader();
             while (leitor.Read())
             {
@@ -53,13 +53,14 @@ namespace Conversor.Services
                     Resultado = leitor.GetDouble(4),
                     Criadoem = DateTime.Parse(leitor.GetString(5))
                 };
+                lista.Add(conversao); // <-- estava faltando
             }
             return lista;
         }
 
         public int Inserir(Conversao c)
         {
-            using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
+            using var conexao = new SqliteConnection($"Data Source={_dbPath}");
             conexao.Open();
             using var comando = conexao.CreateCommand();
             comando.CommandText =
@@ -68,17 +69,21 @@ namespace Conversor.Services
                 VALUES ($origem, $destino, $valor, $resultado, $criadoEm);
                 SELECT last_insert_rowid();
             ";
-            comando.Parameters.AddWithValue("$moedaOrigem", c.MoedaOrigem);
-            comando.Parameters.AddWithValue("$moedaDestino", c.MoedaDestino);
+            // nomes dos parâmetros devem bater com os usados no SQL ($origem, $destino, ...)
+            comando.Parameters.AddWithValue("$origem", c.MoedaOrigem);
+            comando.Parameters.AddWithValue("$destino", c.MoedaDestino);
             comando.Parameters.AddWithValue("$valor", c.Valor);
             comando.Parameters.AddWithValue("$resultado", c.Resultado);
             comando.Parameters.AddWithValue("$criadoEm", c.Criadoem.ToString("o"));
-            return (int)(long)comando.ExecuteScalar();
+
+            var result = comando.ExecuteScalar();
+            if (result == null) return 0;
+            return Convert.ToInt32((long)result);
         }
 
-        public void Atualizar (Conversao c)
+        public void Atualizar(Conversao c)
         {
-            using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
+            using var conexao = new SqliteConnection($"Data Source={_dbPath}");
             conexao.Open();
             using var comando = conexao.CreateCommand();
             comando.CommandText =
@@ -100,13 +105,12 @@ namespace Conversor.Services
 
         public void Excluir(int id)
         {
-            using var conexao = new SqliteConnection($"Data Source = {_dbPath}");
+            using var conexao = new SqliteConnection($"Data Source={_dbPath}");
             conexao.Open();
             using var comando = conexao.CreateCommand();
             comando.CommandText = "DELETE FROM Conversoes WHERE Id = $id";
             comando.Parameters.AddWithValue("$id", id);
             comando.ExecuteNonQuery();
         }
-
     }
 }

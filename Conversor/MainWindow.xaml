@@ -1,16 +1,13 @@
-<Window
+﻿<Window
     x:Class="Conversor.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:models="using:Conversor.Models"
-    Title="Conversor"
-    Width="600" Height="450">
+    xmlns:viewModels="using:Conversor.ViewModels"
+    Title="Conversor">
 
-    <Window.DataContext>
-        <viewModels:MainViewModel />
-    </Window.DataContext>
 
-    <StackPanel Padding="16" Spacing="12">
+    <StackPanel x:Name="RootPanel" Padding="16" Spacing="12">
 
         <TextBlock Text="Conversão de Moedas" FontSize="20"/>
 
@@ -35,14 +32,14 @@
 
         <ListView ItemsSource="{Binding Conversoes}" SelectedItem="{Binding Selecionado}">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Conversao">
+                <DataTemplate>
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind MoedaOrigem}" Width="50"/>
+                        <TextBlock Text="{Binding MoedaOrigem}" Width="50"/>
                         <TextBlock Text="→"/>
-                        <TextBlock Text="{x:Bind MoedaDestino}" Width="50"/>
-                        <TextBlock Text="{x:Bind Valor}" Width="70"/>
+                        <TextBlock Text="{Binding MoedaDestino}" Width="50"/>
+                        <TextBlock Text="{Binding Valor}" Width="70"/>
                         <TextBlock Text="="/>
-                        <TextBlock Text="{x:Bind Resultado}" Width="90"/>
+                        <TextBlock Text="{Binding Resultado}" Width="90"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

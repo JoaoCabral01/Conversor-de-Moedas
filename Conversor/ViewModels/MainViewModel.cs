@@ -6,35 +6,33 @@ using Conversor.Services;
 using Conversor.Helpers;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using System.Security.Cryptography;
 
 namespace Conversor.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly BancoDeDadosService _db;
-        public ObservableCollection<Conversao> Conversaos { get; } = new();
 
-        public string[] moedas { get; } = new string[]
+        // nome público corrigido para casar com XAML
+        public ObservableCollection<Conversao> Conversoes { get; } = new();
+
+        // nome público para as moedas
+        public string[] Moedas { get; } = new string[]
         {
-            "USD",
-            "EUR",
-            "GBP",
-            "JPY",
-            "BRL"
+            "USD", "EUR", "GBP", "JPY", "BRL"
         };
 
         private string _moedaOrigem = "BRL";
-        public string MoedaOrigem { get => _moedaOrigem; set { _moedaOrigem = value; OnPropertyChanged(); } }
+        public string MoedaOrigem { get => _moedaOrigem; set { if (_moedaOrigem != value) { _moedaOrigem = value; OnPropertyChanged(); } } }
 
-        public string _moedaDestino = "USD";
-        public string MoedaDestino { get => _moedaDestino; set { _moedaDestino = value; OnPropertyChanged(); } }
+        private string _moedaDestino = "USD";
+        public string MoedaDestino { get => _moedaDestino; set { if (_moedaDestino != value) { _moedaDestino = value; OnPropertyChanged(); } } }
 
         private double _valor = 1.0;
-        public double Valor { get => _valor; set { _valor = value; OnPropertyChanged(); } }
+        public double Valor { get => _valor; set { if (_valor != value) { _valor = value; OnPropertyChanged(); } } }
 
         private double _resultado;
-        public double Resultado { get => _resultado; set { _resultado = value; OnPropertyChanged(); } }
+        public double Resultado { get => _resultado; set { if (_resultado != value) { _resultado = value; OnPropertyChanged(); } } }
 
         private Conversao? _selecionado;
         public Conversao? Selecionado
@@ -59,9 +57,7 @@ namespace Conversor.ViewModels
         public ICommand ExcluirCommand { get; }
         public ICommand NovoCommand { get; }
 
-
         public event PropertyChangedEventHandler? PropertyChanged;
-
 
         public MainViewModel()
         {
@@ -76,14 +72,13 @@ namespace Conversor.ViewModels
             SalvarCommand = new RelayCommand(_ => Salvar());
             ExcluirCommand = new RelayCommand(_ => Excluir(), _ => Selecionado != null);
             NovoCommand = new RelayCommand(_ => Novo());
-
         }
 
         private void Carregar()
         {
-            Conversaos.Clear();
-            foreach (var iten in _db.ObterTodos())
-                Conversaos.Add(iten);
+            Conversoes.Clear();
+            foreach (var item in _db.ObterTodos())
+                Conversoes.Add(item);
         }
 
         private void Converter()
@@ -112,8 +107,10 @@ namespace Conversor.ViewModels
                     Criadoem = DateTime.UtcNow
                 };
                 novo.Id = _db.Inserir(novo);
-                Conversaos.Insert(0, novo);
+                Conversoes.Insert(0, novo);
             }
+            // atualizar estado do ExcluirCommand (se quiser)
+            (ExcluirCommand as RelayCommand)?.LevantarMudanca();
         }
 
         public void Excluir()
@@ -121,8 +118,9 @@ namespace Conversor.ViewModels
             if (Selecionado != null)
             {
                 _db.Excluir(Selecionado.Id);
-                Conversaos.Remove(Selecionado);
+                Conversoes.Remove(Selecionado);
                 Selecionado = null;
+                (ExcluirCommand as RelayCommand)?.LevantarMudanca();
             }
         }
 
@@ -133,6 +131,7 @@ namespace Conversor.ViewModels
             MoedaDestino = "USD";
             Valor = 1;
             Resultado = 0;
+            (ExcluirCommand as RelayCommand)?.LevantarMudanca();
         }
 
         private double ObterTaxa(string origem, string destino)
@@ -152,5 +151,3 @@ namespace Conversor.ViewModels
         }
     }
 }
-
-
