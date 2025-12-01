@@ -53,7 +53,7 @@ namespace Conversor.Services
                     Resultado = leitor.GetDouble(4),
                     Criadoem = DateTime.Parse(leitor.GetString(5))
                 };
-                lista.Add(conversao); // <-- estava faltando
+                lista.Add(conversao);
             }
             return lista;
         }
@@ -69,7 +69,6 @@ namespace Conversor.Services
                 VALUES ($origem, $destino, $valor, $resultado, $criadoEm);
                 SELECT last_insert_rowid();
             ";
-            // nomes dos parâmetros devem bater com os usados no SQL ($origem, $destino, ...)
             comando.Parameters.AddWithValue("$origem", c.MoedaOrigem);
             comando.Parameters.AddWithValue("$destino", c.MoedaDestino);
             comando.Parameters.AddWithValue("$valor", c.Valor);

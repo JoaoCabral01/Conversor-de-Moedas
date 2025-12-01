@@ -1,11 +1,12 @@
-﻿using System;
-using System.Windows.Input;
-using System.Collections.ObjectModel;
+﻿using Conversor.Helpers;
 using Conversor.Models;
 using Conversor.Services;
-using Conversor.Helpers;
-using System.Runtime.CompilerServices;
+using Microsoft.Data.Sqlite;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace Conversor.ViewModels
 {
@@ -13,10 +14,8 @@ namespace Conversor.ViewModels
     {
         private readonly BancoDeDadosService _db;
 
-        // nome público corrigido para casar com XAML
         public ObservableCollection<Conversao> Conversoes { get; } = new();
 
-        // nome público para as moedas
         public string[] Moedas { get; } = new string[]
         {
             "USD", "EUR", "GBP", "JPY", "BRL"
@@ -109,20 +108,27 @@ namespace Conversor.ViewModels
                 novo.Id = _db.Inserir(novo);
                 Conversoes.Insert(0, novo);
             }
-            // atualizar estado do ExcluirCommand (se quiser)
             (ExcluirCommand as RelayCommand)?.LevantarMudanca();
         }
 
-        public void Excluir()
+        private void Excluir()
         {
-            if (Selecionado != null)
+            if (Selecionado == null) return;
+
+            try
             {
-                _db.Excluir(Selecionado.Id);
-                Conversoes.Remove(Selecionado);
-                Selecionado = null;
-                (ExcluirCommand as RelayCommand)?.LevantarMudanca();
+                _db.Excluir(Selecionado.Id); 
             }
+
+            catch { }
+
+            Conversoes.Remove(Selecionado);
+            Selecionado = null;
+
+            (ExcluirCommand as RelayCommand)?.LevantarMudanca();
         }
+
+
 
         public void Novo()
         {
