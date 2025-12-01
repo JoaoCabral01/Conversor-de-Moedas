@@ -41,6 +41,9 @@ namespace Conversor.ViewModels
             {
                 _selecionado = value;
                 OnPropertyChanged();
+
+                (ExcluirCommand as RelayCommand)?.LevantarMudanca();
+
                 if (value != null)
                 {
                     MoedaOrigem = value.MoedaOrigem;

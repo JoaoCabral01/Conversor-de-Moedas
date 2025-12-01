@@ -26,8 +26,8 @@
                 <Border Background="#003F8C" CornerRadius="12" Padding="20">
                     <StackPanel Spacing="20">
 
-                        <TextBlock Text="Converter"
-                                   FontSize="22"
+                        <TextBlock Text="Converter:"
+                                   FontSize="25"
                                    FontWeight="Bold"
                                    Foreground="White"/>
 
@@ -36,8 +36,22 @@
                                     Spacing="16">
 
                             <ComboBox Width="140"
+                                      Header="Origem"
                                       ItemsSource="{Binding Moedas}"
                                       SelectedItem="{Binding MoedaOrigem}"
+                                      Background="White"
+                                      Foreground="#001A3E"/>
+
+                            <TextBlock Text="--->"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       Margin="0,0,0,6"/>
+
+                            <ComboBox Width="140"
+                                      Header="Destino"
+                                      ItemsSource="{Binding Moedas}"
+                                      SelectedItem="{Binding MoedaDestino}"
                                       Background="White"
                                       Foreground="#001A3E"/>
 
@@ -48,17 +62,11 @@
                                      Foreground="Black"
                                      BorderBrush="#001A3E"/>
 
-                            <ComboBox Width="140"
-                                      ItemsSource="{Binding Moedas}"
-                                      SelectedItem="{Binding MoedaDestino}"
-                                      Background="White"
-                                      Foreground="#001A3E"/>
-
                             <Button Content="Converter"
                                     Padding="12,6"
-                                    Width="130"
+                                    Width="140"
                                     CornerRadius="6"
-                                    Background="#D8001D"
+                                    Background="#FFCA28"
                                     Foreground="White"
                                     FontWeight="Bold"
                                     Command="{Binding ConverterCommand}"/>
@@ -79,6 +87,43 @@
                                            Foreground="#FFCA28"/>
                             </StackPanel>
                         </Border>
+
+
+                        <Border Background="#002D66"
+                                CornerRadius="8"
+                                Padding="14"
+                                BorderBrush="#00A8FF"
+                                BorderThickness="1">
+
+                            <StackPanel>
+                                <TextBlock Text="Como o cálculo funciona"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           Margin="0,0,0,6"/>
+
+                                <TextBlock Text="Resultado = Valor + (Valor × Porcentagem ÷ 100)"
+                                           Foreground="#FFCA28"
+                                           FontSize="16"
+                                           TextWrapping="Wrap"/>
+
+                                <TextBlock Text="Exemplo:"
+                                           Margin="0,10,0,0"
+                                           FontSize="16"
+                                           Foreground="White"
+                                           FontWeight="Bold"/>
+
+                                <TextBlock Text="• Valor = 100"
+                                           Foreground="White"/>
+                                <TextBlock Text="• Porcentagem = 10%"
+                                           Foreground="White"/>
+                                <TextBlock Text="• Resultado = 100 + (100 × 10 ÷ 100) = 110"
+                                           Foreground="#FFCA28"
+                                           FontWeight="Bold"/>
+                            </StackPanel>
+
+                        </Border>
+
 
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
@@ -116,8 +161,8 @@
                     </StackPanel>
                 </Border>
 
-                <TextBlock Text="Histórico"
-                           FontSize="22"
+                <TextBlock Text="Histórico:"
+                           FontSize="25"
                            FontWeight="Bold"
                            Foreground="White"/>
 
