@@ -1,10 +1,10 @@
 ﻿using Conversor.Helpers;
 using Conversor.Models;
 using Conversor.Services;
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
@@ -54,10 +54,22 @@ namespace Conversor.ViewModels
             }
         }
 
+        private string _calcDisplay = "0";
+        public string CalcDisplay
+        {
+            get => _calcDisplay;
+            set { _calcDisplay = value; OnPropertyChanged(); }
+        }
+
+        private double _calcValorAtual = 0;
+        private string _calcOperacao = "";
+        private bool _calcLimparDisplay = false;
+
         public ICommand ConverterCommand { get; }
         public ICommand SalvarCommand { get; }
         public ICommand ExcluirCommand { get; }
         public ICommand NovoCommand { get; }
+        public ICommand CalcPressCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -74,6 +86,8 @@ namespace Conversor.ViewModels
             SalvarCommand = new RelayCommand(_ => Salvar());
             ExcluirCommand = new RelayCommand(_ => Excluir(), _ => Selecionado != null);
             NovoCommand = new RelayCommand(_ => Novo());
+
+            CalcPressCommand = new RelayCommand(p => CalcPress(p?.ToString() ?? ""));
         }
 
         private void Carregar()
@@ -120,9 +134,8 @@ namespace Conversor.ViewModels
 
             try
             {
-                _db.Excluir(Selecionado.Id); 
+                _db.Excluir(Selecionado.Id);
             }
-
             catch { }
 
             Conversoes.Remove(Selecionado);
@@ -130,8 +143,6 @@ namespace Conversor.ViewModels
 
             (ExcluirCommand as RelayCommand)?.LevantarMudanca();
         }
-
-
 
         public void Novo()
         {
@@ -152,6 +163,87 @@ namespace Conversor.ViewModels
             if (origem == "EUR" && destino == "BRL") return 6.10;
 
             return 1;
+        }
+
+        private void CalcPress(string tecla)
+        {
+            if (string.IsNullOrEmpty(tecla)) return;
+
+            if (tecla.Length == 1 && char.IsDigit(tecla[0]))
+            {
+                if (CalcDisplay == "0" || _calcLimparDisplay)
+                    CalcDisplay = tecla;
+                else
+                    CalcDisplay += tecla;
+
+                _calcLimparDisplay = false;
+                return;
+            }
+
+            if (tecla == ".")
+            {
+                if (!CalcDisplay.Contains("."))
+                    CalcDisplay += ".";
+                return;
+            }
+
+            if (tecla == "C")
+            {
+                CalcDisplay = "0";
+                _calcValorAtual = 0;
+                _calcOperacao = "";
+                _calcLimparDisplay = false;
+                return;
+            }
+
+            if (tecla == "+" || tecla == "-" || tecla == "*" || tecla == "/")
+            {
+                if (!string.IsNullOrEmpty(_calcOperacao) && !_calcLimparDisplay)
+                {
+                    ExecutarIgual();
+                }
+
+                if (double.TryParse(CalcDisplay, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
+                {
+                    _calcValorAtual = v;
+                }
+                else
+                {
+                    _calcValorAtual = 0;
+                }
+
+                _calcOperacao = tecla;
+                _calcLimparDisplay = true;
+                return;
+            }
+
+            if (tecla == "=")
+            {
+                ExecutarIgual();
+                return;
+            }
+        }
+
+        private void ExecutarIgual()
+        {
+            if (string.IsNullOrEmpty(_calcOperacao))
+                return;
+
+            if (!double.TryParse(CalcDisplay, NumberStyles.Any, CultureInfo.InvariantCulture, out var segundo))
+                segundo = 0;
+
+            double resultado = _calcOperacao switch
+            {
+                "+" => _calcValorAtual + segundo,
+                "-" => _calcValorAtual - segundo,
+                "*" => _calcValorAtual * segundo,
+                "/" => segundo == 0 ? 0 : _calcValorAtual / segundo,
+                _ => segundo
+            };
+
+            CalcDisplay = resultado.ToString(CultureInfo.InvariantCulture);
+            _calcOperacao = "";
+            _calcLimparDisplay = true;
         }
 
         private void OnPropertyChanged([CallerMemberName] string? nome = null)
