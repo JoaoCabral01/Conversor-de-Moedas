@@ -46,7 +46,8 @@
                                        FontSize="18"
                                        FontWeight="Bold"
                                        Foreground="White"
-                                       Margin="0,0,0,6"/>
+                                       Margin="0,0,0,6"
+                                       VerticalAlignment="Bottom"/>
 
                             <ComboBox Width="140"
                                       Header="Destino"
@@ -69,6 +70,7 @@
                                     Background="#FFCA28"
                                     Foreground="White"
                                     FontWeight="Bold"
+                                    VerticalAlignment="Bottom"
                                     Command="{Binding ConverterCommand}"/>
 
                         </StackPanel>
